@@ -1,0 +1,10 @@
+
+# Tasks
+
+try to follow (https://documents.migale.inrae.fr/posts/tutorials/migale-infra/)
+
+- log in MIGALE
+
+- transfer one sample shotgun sample (_1 and _2) into your directory
+
+
