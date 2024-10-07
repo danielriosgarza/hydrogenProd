@@ -1,0 +1,74 @@
+18/09/2024
+
+-First of all, I removed all the content inside "atlas_samples" (150 gb aprox) to reestart the processing with "Anvi´o-8".
+
+-I activated the "Anvi´o-8" enviroment with "conda actívate anvio-8".
+
+-I downloaded again the samples test in the Atlas page getting the following forlder:
+(anvio-8) lregueiramarcos@n19:~/work/atlas_sample/test_reads$ ls
+sample1_R1.fastq.gz  sample1_R2.fastq.gz  sample2_R1.fastq.gz  sample2_R2.fastq.gz
+
+-Inside this folder, I created a sample.txt file following the Anvi`o tutorial to match each sample with their respective path. For that purpose, I used this code:
+
+
+ file="samples.txt"
+ printf "sample\tr1\tr2\n" > "$file"
+ 
+printf "sample_01\t/home/lregueiramarcos/work/atlas_sample/test_reads/sample1_R1.fastq.gz\t/home                                                /lregueiramarcos/work/atlas_sample/test_reads/sample1_R2.fastq.gz\n" >> "$file"
+
+ printf "sample_02\t/home/lregueiramarcos/work/atlas_sample/test_reads/sample2_R1.fastq.gz\t/home                                                /lregueiramarcos/work/atlas_sample/test_reads/sample2_R2.fastq.gz\n" >> "$file"
+
+With this code, I created the following text file:
+
++(anvio-8) lregueiramarcos@n19:~/work/atlas_sample/test_reads$ cat samples.txt
+sample  r1      r2
+sample_01       /home/lregueiramarcos/work/atlas_sample/test_reads/sample1_R1.fastq.gz  /home/lregueiramarcos/work/atlas_sample/test_reads/sample1_R2.fastq.gz
+sample_02       /home/lregueiramarcos/work/atlas_sample/test_reads/sample2_R1.fastq.gz  /home/lregueiramarcos/work/atlas_sample/test_reads/sample2_R2.fastq.gz
+
+-I continued the tutorial of Anvio:
+mkdir 01_QC
+iu-gen-configs samples.txt -o 01_QC
+
+obtaining the following result:
+
+No matplotlib found
+Report .......................................: Read for 2 samples is read
+Output directory set in configs ..............: /work_home/lregueiramarcos/atlas_sample/test_reads/01_QC
+Prefix for R1 ................................: None
+Prefix for R2 ................................: None
+
+The new folder now has this 2 files: sample_01.ini  sample_02.ini
+
+- Now I used the following command: iu-filter-quality-minoche 01_QC/sample_01.ini
+
+Obtaining this error: 
+No matplotlib found
+Config File Error: RunConfiguration class is upset, because the config object is empty. Probably
+                   your config file is not where you think it is. Please check your paths.
+
+- I tried the following solution from the tutorial: iu-filter-quality-minoche 01_QC/sample_01.ini --ignore-deflines
+
+-It worked, so I did with the other sample, obtaining the following files in the folder:
+
+sample_01.ini                      sample_01-QUALITY_PASSED_R2.fastq  sample_02.ini                      sample_02-QUALITY_PASSED_R2.fastq
+sample_01-QUALITY_PASSED_R1.fastq  sample_01-STATS.txt                sample_02-QUALITY_PASSED_R1.fastq  sample_02-STATS.txt
+
+Important to note that I lack one file that appears in the tutorial ("Sample_02-READ_IDs.cPickle.z) for each sample, and I dont know why.
+
+-The stats folder looked like this: 
+
+number of pairs analyzed      : 529009
+total pairs passed            : 398393 (%75.31 of all pairs)
+  total pair_1 trimmed        : 0 (%0.00 of all passed pairs)
+  total pair_2 trimmed        : 0 (%0.00 of all passed pairs)
+total pairs failed            : 130616 (%24.69 of all pairs)
+  pairs failed due to pair_1  : 54207 (%41.50 of all failed pairs)
+  pairs failed due to pair_2  : 54294 (%41.57 of all failed pairs)
+  pairs failed due to both    : 22115 (%16.93 of all failed pairs)
+
+
+
+
+
+
+

@@ -7,4 +7,14 @@ try to follow (https://documents.migale.inrae.fr/posts/tutorials/migale-infra/)
 
 - transfer one sample shotgun sample (_1 and _2) into your directory
 
+#Tasks 2
+
+Conda in Atlas "conda activate metagenome-atlas-2.8.1"
+
+atlas init --db-dir databases /home/lregueiramarcos/work/atlas_sample/test_reads
+
+atlas run genomes
+
+
+
 
