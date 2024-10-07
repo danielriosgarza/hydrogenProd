@@ -1,0 +1,29 @@
+cd /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576
+
+bbmap.sh minid=0.95 maxindel=3 bwr=0.16 bw=12 quickmatch fast minhits=2 path=/mnt/comics/danielg/metagenomics/databases/BBMap/resources/ qtrim=rl trimq=10 untrim -Xmx64g in1=/mnt/comics/danielg/metagenomics/
+current_analysis_reads/S0576/S0576_1.fq.gz in2=/mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_2.fq.gz outu=/mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.clean.fq ou
+tm=/mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_contaminant_human.fq
+
+reformat.sh in=/mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.clean.fq out1=/mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_1.clean.fq out2=/mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_2.clean.fq
+
+/home/danielg/SPAdes-3.13.1-Linux/bin/spades.py --meta -t 50 -1 /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_1.clean.fq -2 /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_2.clean.fq -o /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576
+
+cat /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/scaffolds.fasta /home/danielg/Daniel/Hs_GRCh38_genome/Homo_sapiens.GRCh38.dna.primary_assembly.fa > /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/SPades_scaffold_plus_GRCh38.fasta
+
+/home/danielg/colon_biopsis/software/CAT-master/CAT_pack/CAT contigs -c /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/scaffolds.fasta -d /mnt/comics/danielg/metagenomics/databases/CAT_prepare_20190719/2019-07-19_CAT_database/ -t /mnt/comics/danielg/metagenomics/databases/CAT_prepare_20190719/2019-07-19_taxonomy/ -o /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/CAT_out -n 50 --path_to_diamond "/home/danielg/bin/diamond" --path_to_prodigal "/mnt/comics/danielg/metagenomics/software/prodigal" --force
+
+
+###Start Here###
+/home/danielg/colon_biopsis/software/CAT-master/CAT_pack/CAT add_names -i /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/CAT_out.contig2classification.txt -t  /mnt/comics/danielg/metagenomics/databases/CAT_prepare_20190719/2019-07-19_taxonomy/ -o /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/CAT_out.tax_names2 --force
+
+/opt/cmbi/bin/bwa index -p /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_scaffolds -a bwtsw -b 20000000000 /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/SPades_scaffold_plus_GRCh38.fasta
+
+/opt/cmbi/bin/bwa mem -t 36 /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_scaffolds /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_1.fq.gz /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576_2.fq.gz | /opt/cmbi/bin/samtools view -@ 36 -u - | /opt/cmbi/bin/samtools sort -@ 36 -o /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.sorted -O bam -
+
+/opt/cmbi/bin/samtools index /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.sorted > /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.samtools.index
+
+/opt/cmbi/bin/samtools idxstats /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.sorted  > /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.samtools.index.stats
+
+/opt/cmbi/bin/samtools flagstat /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.sorted > /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.samtools.index.flagstats
+
+python /mnt/comics/danielg/metagenomics/scripts/parse_profiles_taxonomies.py /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/S0576.samtools.index.stats /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/CAT_out.tax_names2 /mnt/comics/danielg/metagenomics/current_analysis_reads/S0576/bacterial_classification
